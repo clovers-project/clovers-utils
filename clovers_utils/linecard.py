@@ -170,7 +170,7 @@ def linecard(
 
     tag = Tag(font_def, cmap_def)
 
-    x, max_x, y, charlist = (0.0, 0.0, 0.0, [])
+    x, max_x, y, line_size, charlist = (0.0, 0.0, 0.0, 0.0, [])
     for line in lines:
         # 检查继承格式
         if tag.passport:
@@ -248,7 +248,12 @@ def linecard(
                     charlist.append([char, x, y, inner_font, tag.color, tag.align])
                     x += inner_font.getlength(char)
                 max_x = max(max_x, x)
-                x, y = (x, y) if tag.nowrap else (0, y + tag.font.size * spacing)
+                if tag.nowrap:
+                    line_size = max(line_size, tag.font.size)
+                else:
+                    x = 0
+                    y = y + max(line_size, y + tag.font.size) * spacing
+                    line_size = 0.0
 
     width = width if width else int(max_x + padding_x * 2)
     height = height if height else int(y + padding_y * 2)
