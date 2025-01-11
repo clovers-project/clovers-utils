@@ -325,25 +325,33 @@ def info_splicing(
 
     height = padding
 
-    def colorBG(canvas: IMG, image: IMG):
-        colorBG = Image.new("RGBA", (width, image.size[1]), BG_type)
-        canvas.paste(colorBG, (20, height), mask=colorBG)
-        canvas.paste(image, (20, height), mask=image)
+    if BG_type == "NONE":
 
-    def blurBG(canvas: IMG, image: IMG):
-        box = (20, height, 900, height + image.size[1])
-        region = canvas.crop(box)
-        blurred_region = region.filter(ImageFilter.GaussianBlur(radius=4))
-        canvas.paste(blurred_region, box)
-        canvas.paste(image, (20, height), mask=image)
+        def BG(canvas: IMG, image: IMG):
+            canvas.paste(image, (20, height), mask=image)
 
-    def noneBG(canvas: IMG, image: IMG):
-        canvas.paste(image, (20, height), mask=image)
+    elif BG_type.startswith("GAUSS"):
+        try:
+            radius = int(BG_type.split(":")[1])
+        except IndexError:
+            radius = 4
 
-    funcBG = {"GAUSS": blurBG, "NONE": noneBG}.get(BG_type, colorBG)
+        def BG(canvas: IMG, image: IMG):
+            box = (20, height, 900, height + image.size[1])
+            region = canvas.crop(box)
+            blurred_region = region.filter(ImageFilter.GaussianBlur(radius=radius))
+            canvas.paste(blurred_region, box)
+            canvas.paste(image, (20, height), mask=image)
+
+    else:
+
+        def BG(canvas: IMG, image: IMG):
+            colorBG = Image.new("RGBA", (width, image.size[1]), BG_type)
+            canvas.paste(colorBG, (20, height), mask=colorBG)
+            canvas.paste(image, (20, height), mask=image)
 
     for image in info:
-        funcBG(canvas, image)
+        BG(canvas, image)
         height += image.size[1]
         height += spacing * 2
     output = BytesIO()
