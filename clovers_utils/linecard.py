@@ -97,14 +97,15 @@ def remove_tag(text: str, pattern: re.Pattern):
         return None
 
 
-def line_wrap(line: str, width: int, font: FreeTypeFont, start: float = 0):
+def line_wrap(line: str, width: int, font: FreeTypeFont, start: float = 0.0):
     text_x = start
     new_str = ""
     for char in line:
-        text_x += font.getlength(char)
+        char_lenth = font.getlength(char)
+        text_x += char_lenth
         if text_x > width:
             new_str += "\n" + char
-            text_x = 0
+            text_x = char_lenth
         else:
             new_str += char
     return new_str
@@ -171,6 +172,7 @@ def linecard(
     tag = Tag(font_def, cmap_def)
 
     x, max_x, y, line_size, charlist = (0.0, 0.0, 0.0, 0.0, [])
+    wrap_width = width - sum(padding)
     for line in lines:
         # 检查继承格式
         if tag.passport:
@@ -218,8 +220,8 @@ def linecard(
             line = data[0]
             tag.passport = True
 
-        if autowrap and not tag.noautowrap and width and tag.font.getlength(line) > width:
-            line = line_wrap(line, width - sum(padding), tag.font, x)
+        if autowrap and not tag.noautowrap and width and tag.font.getlength(line) > wrap_width:
+            line = line_wrap(line, wrap_width, tag.font, x)
 
         if line == "----":
             inner_tmp = tag.font.size * spacing
@@ -251,8 +253,8 @@ def linecard(
                 if tag.nowrap:
                     line_size = max(line_size, tag.font.size)
                 else:
-                    x = 0
-                    y = y + max(line_size, y + tag.font.size) * spacing
+                    x = 0.0
+                    y = y + max(line_size, tag.font.size) * spacing
                     line_size = 0.0
 
     width = width if width else int(max_x + padding_x * 2)
