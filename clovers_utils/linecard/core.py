@@ -299,7 +299,7 @@ def linecard(
                         inner_font_name = font_manager.find_font(inner_font_name)
                     if inner_font_size or inner_font_name:
                         inner_font_name = inner_font_name or font_def.path
-                        inner_font_size = inner_font_size or line_height
+                        inner_font_size = inner_font_size or font_size
                         try:
                             line_font = ImageFont.truetype(font=inner_font_name, size=inner_font_size, encoding="utf-8")
                             line_cmap = TTFont(inner_font_name, fontNumber=line_font.index).getBestCmap()
