@@ -457,7 +457,7 @@ def linecard(
     return canvas
 
 
-ImageList = list[IMG]
+type ImageList = list[IMG]
 
 
 def info_splicing(
