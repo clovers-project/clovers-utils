@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "clovers-utils"
-version = "0.1.2"
+version = "0.2.0"
 description = ""
 authors = ["KarisAya <1048827424@qq.com>"]
 readme = "README.md"
@@ -18,5 +18,13 @@ tools = ["numpy","httpx",]
 all = ["numpy","httpx","fonttools","pillow",]
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core", "setuptools", "wheel"]
 build-backend = "poetry.core.masonry.api"
+
+
+[tool.setuptools]
+packages = ["clovers_utils"]
+
+[tool.setuptools.extensions]
+linecard_parsing = {sources = ["linecard_parsing/linecard_parsing.c"]}
+
