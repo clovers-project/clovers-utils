@@ -245,7 +245,7 @@ def linecard(
                         if inner_font_name:
                             inner_font_name = font_manager.find_font(inner_font_name)
                         if inner_font_size or inner_font_name:
-                            inner_font_name = inner_font_name or font_def.path
+                            inner_font_name = inner_font_name or line_font.path
                             inner_font_size = inner_font_size or font_size
                             try:
                                 line_font = ImageFont.truetype(font=inner_font_name, size=inner_font_size, encoding="utf-8")

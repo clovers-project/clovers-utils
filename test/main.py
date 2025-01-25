@@ -29,11 +29,11 @@ linecard 是一个简易的文字转图片的函数，使用python pillow
 [left]{[left]}左对齐[right]{[right]}右对齐[center]{[center]}居中对齐
 [pixel 100]{[pixel 100]}指定像素[pixel 800]{[pixel 800]}指定像素
 [font size = 50]继承格式
-渲染文字的标签效果是定义此行效果，换行后会恢复默认效果，可以在标记{[passport]}让下一行继承本行的格式
-例：
-[center][font size = 80,name = simfang ,highlight = yellow]这里是第一行[passport]
-这里是第二行[passport]
-[font highlight = ]这里是第三行
+[font name=simfang]{[font name=simfang]}渲染文字的标签效果是定义此行效果，换行后会恢复默认效果，可以在标记{[passport]}让下一行继承本行的格式[passport]{[passport]}
+本段文本真正的控制标签在原样输出前[passport]{[passport]}
+[font highlight=yellow]{[font highlight=yellow]}这里是第一行[passport]{[passport]}
+这里是第二行[passport]{[passport]}
+[font highlight=]{[font highlight=]}这里是第三行[style color = blue]{[style color = blue]}[passport]{[passport]}
 ----
 [font size = 50]换行标签
 {[autowrap]}如果本行文字太长，并且图片范围不够大，则会自动换行。
