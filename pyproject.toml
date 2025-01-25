@@ -1,35 +1,21 @@
-[tool.poetry]
+[project]
 name = "clovers-utils"
 version = "0.2.0"
 description = ""
-authors = ["KarisAya <1048827424@qq.com>"]
+authors = [{ name = "KarisAya", email = "1048827424@qq.com" }]
 readme = "README.md"
+requires-python = ">=3.12"
 
-[tool.poetry.dependencies]
-python = "^3.12"
-fonttools = { version = "^4.51.0", optional = true }
-pillow = { version = "^10.3.0", optional = true }
-numpy = { version = "^1.26.4", optional = true }
-httpx = { version = "^0.27.0", optional = true }
-
-[tool.poetry.extras]
-linecard = ["fonttools", "pillow"]
-tools = ["numpy", "httpx"]
-all = ["numpy", "httpx", "fonttools", "pillow"]
+[project.optional-dependencies]
+linecard = ["pillow (>=11.1.0,<12.0.0)", "fonttools (>=4.55.6,<5.0.0)"]
+tools = ["numpy (>=2.2.2,<3.0.0)", "httpx (>=0.28.1,<0.29.0)"]
+all = [
+    "fonttools (>=4.55.6,<5.0.0)",
+    "httpx (>=0.28.1,<0.29.0)",
+    "numpy (>=2.2.2,<3.0.0)",
+    "httpx (>=0.28.1,<0.29.0)",
+]
 
 [build-system]
-requires = ["poetry.core"]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.setuptools]
-packages = ["clovers_utils"]
-
-[tool.setuptools.extensions]
-linecard.linecard_parsing = { sources = [
-    "linecard_parsing/linecard_parsing.cpp",
-], extra_compile_args = [
-    "-std=c++20",
-    "-O2",
-    "-ffast-math",
-    "-finline-functions",
-] }
