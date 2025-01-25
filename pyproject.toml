@@ -7,24 +7,29 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-fonttools = {version = "^4.51.0", optional = true}
-pillow = {version = "^10.3.0", optional = true}
-numpy = {version = "^1.26.4", optional = true}
-httpx = {version = "^0.27.0", optional = true}
+fonttools = { version = "^4.51.0", optional = true }
+pillow = { version = "^10.3.0", optional = true }
+numpy = { version = "^1.26.4", optional = true }
+httpx = { version = "^0.27.0", optional = true }
 
 [tool.poetry.extras]
-linecard = ["fonttools","pillow",]
-tools = ["numpy","httpx",]
-all = ["numpy","httpx","fonttools","pillow",]
+linecard = ["fonttools", "pillow"]
+tools = ["numpy", "httpx"]
+all = ["numpy", "httpx", "fonttools", "pillow"]
 
 [build-system]
-requires = ["poetry-core", "setuptools", "wheel"]
+requires = ["poetry.core"]
 build-backend = "poetry.core.masonry.api"
-
 
 [tool.setuptools]
 packages = ["clovers_utils"]
 
 [tool.setuptools.extensions]
-linecard_parsing = {sources = ["linecard_parsing/linecard_parsing.c"]}
-
+linecard.linecard_parsing = { sources = [
+    "linecard_parsing/linecard_parsing.cpp",
+], extra_compile_args = [
+    "-std=c++20",
+    "-O2",
+    "-ffast-math",
+    "-finline-functions",
+] }
