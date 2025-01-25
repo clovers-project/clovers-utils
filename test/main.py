@@ -1,9 +1,3 @@
-import sys
-
-sys.path.append(r"D:\GIT\clovers-utils")
-from clovers_utils.linecard import FontManager, linecard
-
-
 text = """
 [center][font size = 80,name = simfang]linecard介[font color = red]绍
 [style color = green,height = 80]----
@@ -55,6 +49,10 @@ linecard 是一个简易的文字转图片的函数，使用python pillow
 )
 
 if __name__ == "__main__":
+    import sys
+
+    sys.path.append(r"D:\GIT\clovers-utils")
+    from clovers_utils.linecard import FontManager, linecard
 
     fm = FontManager("msyh", ["simfang"], [40])
 
