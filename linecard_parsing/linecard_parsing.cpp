@@ -138,12 +138,12 @@ public:
                 }
                 else if (startswith(start_ptr, "autowrap]"))
                 {
-                    args.push_back(Tag{'w', "autowrap", i, i += 9, false});
+                    args.push_back(Tag{'t', "autowrap", i, i += 9, false});
                     length -= 8;
                 }
                 else if (startswith(start_ptr, "noautowrap]"))
                 {
-                    args.push_back(Tag{'w', "noautowrap", i, i += 11, false});
+                    args.push_back(Tag{'t', "noautowrap", i, i += 11, false});
                     length -= 10;
                 }
             }

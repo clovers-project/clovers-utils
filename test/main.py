@@ -13,7 +13,10 @@ linecard 是一个简易的文字转图片的函数，使用python pillow
 [font size = 50]横线
 如果本行文字是 {----}（四个短线）那么这一行会被渲染为横线
 [font size = 50]原样输出
-需要原样输出的文字要被包裹在大括号里，大括号必须是封闭的。
+需要原样输出的文字要被包裹在大括号{{}}里。
+大括号内的内容可以嵌套，但是不会出现不嵌套的两个封闭大括号
+例下面高光部分为提取原样文本
+[font name=simsun,highlight=#CCCCCC]他们{{}[font highlight=yellow]从{{}充满[font highlight=#CCCCCC]{}}迷雾的{{}[font highlight=yellow]远方{}}策马缓缓而来[font highlight=#CCCCCC ]{}}，口中{{}[font highlight = yellow]重复{{}哼着一段{}}单调动听[font highlight=#CCCCCC ]{}}的旋律。
 [font size = 50]字体控制标签
 [font size=50,name=simsun,color=blue,highlight=yellow]{[font size=50,name=simsun,color=blue,highlight=yellow]}
 [font size = 50]对齐标签

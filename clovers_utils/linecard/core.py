@@ -8,6 +8,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 from PIL.ImageFont import FreeTypeFont
 from PIL.Image import Image as IMG
 from typing import TypedDict, Literal
+from .linecard_parsing import parse_str
 
 match sys.platform:
     case "win32":
@@ -106,22 +107,14 @@ def line_wrap(line: str, width: int, font: FreeTypeFont, start: float = 0.0) -> 
     return new_str
 
 
-def remove_tag(text: str, pattern: re.Pattern):
-    match = pattern.search(text)
-    if not match:
-        return
-    start, end = match.span()
-    return text[:start] + text[end:], text[start:end]
-
-
 class CharSingle(TypedDict):
     char: str
-    x: int | float
-    end_x: int | float
-    y: int | float
+    x: int
+    end_x: int
+    y: int
     font: FreeTypeFont
     color: str
-    align: str | int
+    align: str
     highlight: str | None
 
 
@@ -146,17 +139,6 @@ def try_float(n: str | None):
             return float(n)
         except ValueError:
             pass
-
-
-class linecard_pattern:
-    align = re.compile(r"\[left\]|\[right\]|\[center\]|\[pixel.*?\]")
-    font = re.compile(r"\[font\s*([^]]*)\]")
-    style = re.compile(r"\[style.*?\]")
-    passport = re.compile(r"\[passport\]")
-    nowrap = re.compile(r"\[nowrap\]")
-    autowrap = re.compile(r"\[autowrap\]")
-    noautowrap = re.compile(r"\[noautowrap\]")
-    raw = re.compile(r"\{([^}]*)\}")
 
 
 def linecard(
@@ -189,13 +171,7 @@ def linecard(
         [autowrap]自动换行
         [noautowrap]不自动换行
     """
-    text = text.replace("\r\n", "\n")
-    if all_rawtext := linecard_pattern.raw.findall(text):
-        text = linecard_pattern.raw.sub("{}", text)
-    if all_fontkwargs := linecard_pattern.font.findall(text):
-        text = linecard_pattern.font.sub("{f}", text)
-    if all_align := linecard_pattern.align.findall(text):
-        text = linecard_pattern.align.sub("{a}", text)
+    text, tags = parse_str(text)
     padding_x, padding_y = padding
     font_def = font_manager.font(font_size)
     cmap_def = font_manager.cmap
@@ -207,7 +183,7 @@ def linecard(
     line_height: int = 0
     line_width: int = 0
 
-    line_align: str | int = "left"
+    line_align: str = "left"
     line_font: FreeTypeFont = font_def
     line_cmap: dict = cmap_def
 
@@ -248,91 +224,73 @@ def linecard(
             line_passport = False
         else:
             line_init()
-
-        if data := remove_tag(line, linecard_pattern.style):
-            line, stylekwargs_str = data
-            stylekwargs = {k: v for k, v in [x.split("=", 1) for x in stylekwargs_str[6:-1].replace(" ", "").split(",")]}
-            line_height = try_int(stylekwargs.get("height")) or line_height
-            line_width = try_int(stylekwargs.get("width")) or line_width
-            line_color = stylekwargs.get("color") or color
-        else:
-            stylekwargs = {}
-
-        if data := remove_tag(line, linecard_pattern.nowrap):
-            line = data[0]
-            line_nowrap = True
-        if data := remove_tag(line, linecard_pattern.noautowrap):
-            line = data[0]
-            line_autowrap = False
-        if data := remove_tag(line, linecard_pattern.autowrap):
-            line = data[0]
-            line_autowrap = True
-        if data := remove_tag(line, linecard_pattern.passport):
-            line = data[0]
-            line_passport = True
-        if line == "----":
-            line_height = line_height or font_size
-            charlist.append(
-                {
-                    "char": "----",
-                    "size": line_height,
-                    "y": y,
-                    "color": stylekwargs.get("color", "gray"),
-                }
-            )
-            x = 0
-        else:
-            tmp_height: int = 0
-            for inner_line in line.replace("{", "\n{").split("\n"):
-                # 检查标签
-                if inner_line.startswith("{}"):
-                    raw_text: str = all_rawtext[0]
-                    all_rawtext = all_rawtext[1:]
-                    inner_line = raw_text + inner_line[2:]
-                elif inner_line.startswith("{f}"):
-                    raw_fontkwargs: str = all_fontkwargs[0]
-                    all_fontkwargs = all_fontkwargs[1:]
-                    fontkwargs = {k: v for k, v in [x.split("=") for x in raw_fontkwargs.replace(" ", "").split(",")]}
-                    inner_font_size = try_int(fontkwargs.get("size"))
-                    inner_font_name = fontkwargs.get("name")
-                    if inner_font_name:
-                        inner_font_name = font_manager.find_font(inner_font_name)
-                    if inner_font_size or inner_font_name:
-                        inner_font_name = inner_font_name or font_def.path
-                        inner_font_size = inner_font_size or font_size
-                        try:
-                            line_font = ImageFont.truetype(font=inner_font_name, size=inner_font_size, encoding="utf-8")
-                            line_cmap = TTFont(inner_font_name, fontNumber=line_font.index).getBestCmap()
-                        except OSError:
-                            pass
-                    line_color = fontkwargs.get("color") or line_color
-                    line_highlight = fontkwargs.get("highlight")
-                    inner_line = inner_line[3:]
-                elif inner_line.startswith("{a}"):
-                    inner_align = all_align[0]
-                    all_align = all_align[1:]
-                    if inner_align.startswith("[pixel"):
-                        try:
-                            inner_align = int(inner_align[6:-1])
-                            x = inner_align
-                        except ValueError:
-                            pass
-                    else:
-                        inner_align = inner_align[1:-1]
-                    if line_align != inner_align:
-                        x = 0
-                    line_align = inner_align
-                    inner_line = inner_line[3:]
-                if not inner_line:
-                    continue
+        tmp_height: int = 0
+        for inner_line in line.replace("{", "\n{").split("\n"):
+            if inner_line.startswith("{}"):
+                inner_line = inner_line[2:]
+                tag, textargs = tags[0]
+                tags = tags[1:]
+                match tag:
+                    case b"r":
+                        inner_line = textargs + inner_line
+                    case b"a":
+                        inner_align = textargs
+                        if line_align != inner_align:
+                            x = 0
+                        line_align = inner_align
+                    case b"f":
+                        fontkwargs = {k: v for k, v in [x.split("=") for x in textargs.replace(" ", "").split(",")]}
+                        inner_font_size = try_int(fontkwargs.get("size"))
+                        inner_font_name = fontkwargs.get("name")
+                        if inner_font_name:
+                            inner_font_name = font_manager.find_font(inner_font_name)
+                        if inner_font_size or inner_font_name:
+                            inner_font_name = inner_font_name or font_def.path
+                            inner_font_size = inner_font_size or font_size
+                            try:
+                                line_font = ImageFont.truetype(font=inner_font_name, size=inner_font_size, encoding="utf-8")
+                                line_cmap = TTFont(inner_font_name, fontNumber=line_font.index).getBestCmap()
+                            except OSError:
+                                pass
+                        line_color = fontkwargs.get("color") or line_color
+                        line_highlight = fontkwargs.get("highlight")
+                    case b"s":
+                        stylekwargs = {k: v for k, v in [x.split("=", 1) for x in textargs.replace(" ", "").split(",")]}
+                        line_height = try_int(stylekwargs.get("height")) or line_height
+                        line_width = try_int(stylekwargs.get("width")) or line_width
+                        line_color = stylekwargs.get("color") or color
+                    case b"t":
+                        match textargs:
+                            case "nowrap":
+                                line_nowrap = True
+                            case "autowrap":
+                                line_autowrap = True
+                            case "noautowrap":
+                                line_autowrap = False
+                            case "passport":
+                                line_passport = True
+            if not inner_line:
+                continue
+            elif inner_line == "----":
+                line_height = line_height or font_size
+                charlist.append(
+                    {
+                        "char": "----",
+                        "size": line_height,
+                        "y": y,
+                        "color": line_color,
+                    }
+                )
+                x = 0
+            else:
                 inline_height = int(line_font.size)
                 if line_width and line_autowrap:
-                    if isinstance(line_align, int):
-                        char_align = line_align
-                        start_x = line_align + x
-                    else:
+                    if line_align in {"left", "right", "center"}:
                         start_x = x
                         char_align = 0
+                    else:
+                        char_align = try_int(line_align) or 0
+                        start_x = char_align + x
                     if line_font.getlength(inner_line) > line_width - start_x:
                         if (inner_wrap_width := line_width - char_align) > inline_height:
                             inner_line = line_wrap(inner_line, inner_wrap_width, line_font, x)
@@ -369,7 +327,7 @@ def linecard(
                         x = 0
                         tmp_height += abslutespacing + inline_height
                 inline_height = tmp_height + abslutespacing + inline_height
-        line_height = max(line_height, inline_height)
+            line_height = max(line_height, inline_height)
         if not line_nowrap:
             x = 0
             y += abslutespacing + line_height
@@ -383,77 +341,103 @@ def linecard(
     loop = len(charlist)
     while i < loop:
         tmp_char = charlist[i]
-        match tmp_char["char"]:
-            case "----":
-                char_line: CharLine = tmp_char
-                inner_y = char_line["y"] + padding_y + (char_line["size"] + 0.5) // 2 + 4
-                draw.line(((0, inner_y), (width, inner_y)), fill=char_line["color"], width=4)
-                i += 1
-            case _:
-                char_info: CharSingle = tmp_char
-                align = char_info["align"]
-                y = char_info["y"]
-                start_y = y + padding_y
-                if isinstance(align, int):
-                    start_x = align
-                elif align == "left":
-                    start_x = padding_x
-                else:
-                    inner_i = i
-                    inner_char_info: CharSingle
-                    for inner_char_info in charlist[i:]:
-                        if len(inner_char_info["char"]) == 1 and inner_char_info["y"] == y and inner_char_info["align"] == align:
-                            inner_i += 1
-                        else:
-                            break
-                    if align == "right":
-                        start_x = width - padding_x - charlist[inner_i - 1]["end_x"]
-                    elif align == "center":
-                        start_x = (width - charlist[inner_i - 1]["end_x"]) // 2
+        if tmp_char["char"] == "----":
+            char_line: CharLine = tmp_char
+            inner_y = char_line["y"] + padding_y + (char_line["size"] + 0.5) // 2 + 4
+            draw.line(((0, inner_y), (width, inner_y)), fill=char_line["color"], width=4)
+            i += 1
+        else:
+            char_info: CharSingle = tmp_char
+            align = char_info["align"]
+            y = char_info["y"]
+            start_y = y + padding_y
+            if align == "left":
+                start_x = padding_x
+            elif align == "right":
+                inner_i = i
+                inner_char_info: CharSingle
+                for inner_char_info in charlist[i:]:
+                    if inner_char_info["char"] != "----" and inner_char_info["y"] == y and inner_char_info["align"] == align:
+                        inner_i += 1
                     else:
-                        start_x = padding_x
-                    for inner_char_info in charlist[i:inner_i]:
-                        inner_x = inner_char_info["x"]
-                        inner_font = inner_char_info["font"]
-                        inner_highlight = inner_char_info["highlight"]
-                        if inner_highlight:
-                            draw.rectangle(
-                                (
-                                    start_x + inner_x,
-                                    start_y,
-                                    start_x + inner_char_info["end_x"],
-                                    start_y + inner_font.size,
-                                ),
-                                fill=inner_highlight,
-                            )
-                        draw.text(
-                            (start_x + inner_x, start_y),
-                            inner_char_info["char"],
-                            fill=inner_char_info["color"],
-                            font=inner_font,
+                        break
+                start_x = width - padding_x - charlist[inner_i - 1]["end_x"]
+                for inner_char_info in charlist[i:inner_i]:
+                    inner_x = inner_char_info["x"]
+                    inner_font = inner_char_info["font"]
+                    inner_highlight = inner_char_info["highlight"]
+                    if inner_highlight:
+                        draw.rectangle(
+                            (
+                                start_x + inner_x,
+                                start_y,
+                                start_x + inner_char_info["end_x"],
+                                start_y + inner_font.size,
+                            ),
+                            fill=inner_highlight,
                         )
-                    i = inner_i
-                    continue
-                x = char_info["x"]
-                font = char_info["font"]
-                highlight = char_info["highlight"]
-                if highlight:
-                    draw.rectangle(
-                        (
-                            start_x + x,
-                            start_y,
-                            start_x + char_info["end_x"],
-                            start_y + font.size,
-                        ),
-                        fill=highlight,
+                    draw.text(
+                        (start_x + inner_x, start_y),
+                        inner_char_info["char"],
+                        fill=inner_char_info["color"],
+                        font=inner_font,
                     )
-                draw.text(
-                    (start_x + x, start_y),
-                    char_info["char"],
-                    fill=char_info["color"],
-                    font=font,
+                i = inner_i
+                continue
+            elif align == "center":
+                inner_i = i
+                inner_char_info: CharSingle
+                for inner_char_info in charlist[i:]:
+                    if len(inner_char_info["char"]) == 1 and inner_char_info["y"] == y and inner_char_info["align"] == align:
+                        inner_i += 1
+                    else:
+                        break
+                start_x = (width - charlist[inner_i - 1]["end_x"]) // 2
+                for inner_char_info in charlist[i:inner_i]:
+                    inner_x = inner_char_info["x"]
+                    inner_font = inner_char_info["font"]
+                    inner_highlight = inner_char_info["highlight"]
+                    if inner_highlight:
+                        draw.rectangle(
+                            (
+                                start_x + inner_x,
+                                start_y,
+                                start_x + inner_char_info["end_x"],
+                                start_y + inner_font.size,
+                            ),
+                            fill=inner_highlight,
+                        )
+                    draw.text(
+                        (start_x + inner_x, start_y),
+                        inner_char_info["char"],
+                        fill=inner_char_info["color"],
+                        font=inner_font,
+                    )
+                i = inner_i
+                continue
+            else:
+                start_x = try_int(align) or 0
+            x = char_info["x"]
+            font = char_info["font"]
+            highlight = char_info["highlight"]
+            if highlight:
+                draw.rectangle(
+                    (
+                        start_x + x,
+                        start_y,
+                        start_x + char_info["end_x"],
+                        start_y + font.size,
+                    ),
+                    fill=highlight,
                 )
-                i += 1
+            draw.text(
+                (start_x + x, start_y),
+                char_info["char"],
+                fill=char_info["color"],
+                font=font,
+            )
+            i += 1
+
     return canvas
 
 
