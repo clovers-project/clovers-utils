@@ -16,6 +16,22 @@ all = [
     "httpx (>=0.28.1,<0.29.0)",
 ]
 
+# [build-system]
+# requires = ["poetry-core>=2.0.0,<3.0.0"]
+# build-backend = "poetry.core.masonry.api"
+
 [build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.poetry.group.build.dependencies]
+cibuildwheel = "^2.22.0"
+setuptools = "^75.8.0"
+
+[tool.setuptools]
+packages = ["clovers_utils", "clovers_utils.linecard"]
+
+[tool.setuptools.extension]
+name = "clovers_utils.linecard.linecard_parsing"
+sources = ["clovers_utils/linecard/linecard_parsing.cpp"]
+extra_compile_args = ["/std:c++latest", "/O2", "/Oi", "/Ob2"]
