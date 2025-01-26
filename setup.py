@@ -4,7 +4,7 @@ import os
 if os.name == "nt":
     extra_compile_args = ["/std:c++latest", "/O2", "/Oi", "/Ob2"]
 else:
-    extra_compile_args = ["-std=c++latest", "-O3"]
+    extra_compile_args = ["-std=c++20", "-O3"]
 
 ext_modules = [
     Extension(
