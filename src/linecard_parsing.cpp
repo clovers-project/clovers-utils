@@ -1,6 +1,9 @@
 #include <Python.h>
 #include <vector>
 
+#define and &&
+#define or ||
+
 static PyObject *parse_str(PyObject *self, PyObject *args);
 static PyMethodDef moduleMethods[] = {
     {"parse_str", parse_str, METH_O, "parse linecard string"},
@@ -35,7 +38,7 @@ static bool startswith(const char *str, const char *prefix)
     return true;
 }
 
-static struct Tag
+struct Tag
 {
     const char name;
     const char *value;
