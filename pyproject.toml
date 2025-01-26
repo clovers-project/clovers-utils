@@ -33,5 +33,5 @@ packages = ["clovers_utils", "clovers_utils.linecard"]
 
 [tool.setuptools.extension]
 name = "clovers_utils.linecard.linecard_parsing"
-sources = ["clovers_utils/linecard/linecard_parsing.cpp"]
+sources = ["linecard_parsing/linecard_parsing.cpp"]
 extra_compile_args = ["/std:c++latest", "/O2", "/Oi", "/Ob2"]
