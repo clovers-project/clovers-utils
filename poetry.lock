@@ -357,7 +357,7 @@ description = "Python Imaging Library (Fork)"
 optional = true
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "extra == \"linecard\""
+markers = "extra == \"linecard\" or extra == \"all\""
 files = [
     {file = "pillow-11.1.0-cp310-cp310-macosx_10_10_x86_64.whl", hash = "sha256:e1abe69aca89514737465752b4bcaf8016de61b3be1397a8fc260ba33321b3a8"},
     {file = "pillow-11.1.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:c640e5a06869c75994624551f45e5506e4256562ead981cce820d5ab39ae2192"},
@@ -505,11 +505,11 @@ files = [
 ]
 
 [extras]
-all = ["fonttools", "httpx", "httpx", "numpy"]
+all = ["fonttools", "httpx", "numpy", "pillow"]
 linecard = ["fonttools", "pillow"]
 tools = ["httpx", "numpy"]
 
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12"
-content-hash = "0bcb1518d4d6e6da4c2716d141c1f304e823fb15306c754f6e76a9ff06694a5d"
+content-hash = "158fde334521578fc853d2fac000b3c0b63dfadcaefc52feede9ac3fd37cd27e"

@@ -22,7 +22,7 @@ static char *substr(const char *str, long start, long end)
 {
     long l = end - start;
     char *result = new char[l + 1];
-    std::memcpy(result, str + start, l);
+    memcpy(result, str + start, l);
     result[l] = '\0';
     return result;
 }
@@ -161,13 +161,13 @@ public:
         char *ptrText = text;
         for (auto &tag : args)
         {
-            std::memcpy(ptrText, rawtext + iTmp, tag.l - iTmp);
+            memcpy(ptrText, rawtext + iTmp, tag.l - iTmp);
             ptrText += (tag.l - iTmp);
             *ptrText++ = '{';
             *ptrText++ = '}';
             iTmp = tag.r + 1;
         }
-        std::memcpy(ptrText, rawtext + iTmp, i - iTmp);
+        memcpy(ptrText, rawtext + iTmp, i - iTmp);
         ptrText += i - iTmp;
         *ptrText = '\0';
     }

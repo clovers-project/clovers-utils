@@ -1,6 +1,6 @@
 import re
-from linecard_parsing import parse_str
 from main import text as rawtext
+from clovers_utils.linecard.linecard_parsing import parse_str
 
 
 def raw_text(text: str):
@@ -48,8 +48,8 @@ class linecard_pattern:
 
 
 def preprocess_text(text: str):
-    text = linecard_pattern.raw.sub("{}", text)
-    # all_rawtext, text = raw_text(text)
+    # text = linecard_pattern.raw.sub("{}", text)
+    all_rawtext, text = raw_text(text)
     text = linecard_pattern.align.sub("{}", text)
     text = linecard_pattern.font.sub("{}", text)
     text = linecard_pattern.style.sub("{}", text)
@@ -68,5 +68,5 @@ print(text1 == text2)
 
 import timeit
 
-print(timeit.timeit(lambda: preprocess_text(rawtext), number=10000))
-print(timeit.timeit(lambda: parse_str(rawtext), number=10000))
+print(timeit.timeit(lambda: preprocess_text(rawtext), number=1000))
+print(timeit.timeit(lambda: parse_str(rawtext), number=1000))
