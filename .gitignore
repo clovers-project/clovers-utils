@@ -5,3 +5,4 @@ __pycache__/
 distpoetr
 dist
 build
+*.egg-info/

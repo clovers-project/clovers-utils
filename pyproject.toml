@@ -10,8 +10,8 @@ requires-python = ">=3.12"
 linecard = ["pillow (>=11.1.0,<12.0.0)", "fonttools (>=4.55.6,<5.0.0)"]
 tools = ["numpy (>=2.2.2,<3.0.0)", "httpx (>=0.28.1,<0.29.0)"]
 all = [
+    "pillow (>=11.1.0,<12.0.0)",
     "fonttools (>=4.55.6,<5.0.0)",
-    "httpx (>=0.28.1,<0.29.0)",
     "numpy (>=2.2.2,<3.0.0)",
     "httpx (>=0.28.1,<0.29.0)",
 ]
@@ -30,8 +30,3 @@ setuptools = "^75.8.0"
 
 [tool.setuptools]
 packages = ["clovers_utils", "clovers_utils.linecard"]
-
-[tool.setuptools.extension]
-name = "clovers_utils.linecard.linecard_parsing"
-sources = ["linecard_parsing/linecard_parsing.cpp"]
-extra_compile_args = ["/std:c++latest", "/O2", "/Oi", "/Ob2"]
