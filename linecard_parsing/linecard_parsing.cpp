@@ -30,7 +30,7 @@ static char *substr(const char *str, long start, long end)
 static bool startswith(const char *str, const char *prefix)
 {
     for (long i = 0; prefix[i] != '\0'; ++i)
-        if (str[i] != prefix[i] or str[i] == '\0')
+        if (str[i] != prefix[i])
             return false;
     return true;
 }
