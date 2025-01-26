@@ -1,9 +1,6 @@
 #include <Python.h>
 #include <vector>
 
-#define and &&
-#define or ||
-
 static PyObject *parse_str(PyObject *self, PyObject *args);
 static PyMethodDef moduleMethods[] = {
     {"parse_str", parse_str, METH_O, "parse linecard string"},
