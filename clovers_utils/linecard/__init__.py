@@ -444,7 +444,7 @@ type ImageList = list[IMG]
 
 
 class CanvasEffectHandler(Protocol):
-    def __call__(self, canvas: IMG, image: IMG) -> None: ...
+    def __call__(self, canvas: IMG, image: IMG, padding: int, width: int, height: int) -> None: ...
 
 
 def info_splicing(
@@ -477,14 +477,13 @@ def info_splicing(
         canvas = Image.new("RGB", size, "white")
         BG_type = "NONE"
 
-    height = padding
     CanvasEffect: CanvasEffectHandler
 
     if isinstance(BG_type, str):
         if BG_type == "NONE":
 
-            def BG(canvas: IMG, image: IMG):
-                canvas.paste(image, (20, height), mask=image)
+            def BG(canvas: IMG, image: IMG, padding: int, width: int, height: int):
+                canvas.paste(image, (padding, height), mask=image)
 
         elif BG_type.startswith("GAUSS"):
             try:
@@ -492,8 +491,8 @@ def info_splicing(
             except (IndexError, ValueError):
                 radius = 4
 
-            def BG(canvas: IMG, image: IMG):
-                box = (20, height, 900, height + image.size[1])
+            def BG(canvas: IMG, image: IMG, padding: int, width: int, height: int):
+                box = (padding, height, width + padding, height + image.size[1])
                 region = canvas.crop(box)
                 blurred_region = region.filter(ImageFilter.GaussianBlur(radius=radius))
                 canvas.paste(blurred_region, box)
@@ -501,25 +500,27 @@ def info_splicing(
 
         else:
 
-            def BG(canvas: IMG, image: IMG):
+            def BG(canvas: IMG, image: IMG, padding: int, width: int, height: int):
                 colorBG = Image.new("RGBA", (width, image.size[1]), BG_type)
-                canvas.paste(colorBG, (20, height), mask=colorBG)
-                canvas.paste(image, (20, height), mask=image)
+                canvas.paste(colorBG, (padding, height), mask=colorBG)
+                canvas.paste(image, (padding, height), mask=image)
 
         CanvasEffect = BG
     else:
         CanvasEffect = BG_type
 
+    height = padding
+
     for image in info:
-        CanvasEffect(canvas, image)
-        height += image.size[1]
-        height += spacing * 2
+        CanvasEffect(canvas, image, padding, width, height)
+        height += image.size[1] + spacing * 2
+
     output = BytesIO()
     canvas.convert("RGB").save(output, format="png")
     return output
 
 
-def CropResize(img: IMG, size: tuple[int, int]):
+def CropResize(img: IMG, size: tuple[int, int]) -> IMG:
     """
     修改图像尺寸
     """
