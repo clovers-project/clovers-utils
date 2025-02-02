@@ -489,7 +489,7 @@ def info_splicing(
         elif BG_type.startswith("GAUSS"):
             try:
                 radius = int(BG_type.split(":")[1])
-            except IndexError | ValueError:
+            except (IndexError, ValueError):
                 radius = 4
 
             def BG(canvas: IMG, image: IMG):
