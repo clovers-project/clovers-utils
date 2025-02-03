@@ -1,7 +1,6 @@
 import sys
 from pathlib import Path
 from collections.abc import Iterable
-from io import BytesIO
 from fontTools.ttLib import TTFont
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 from PIL.ImageFont import FreeTypeFont
@@ -77,15 +76,6 @@ class FontManager:
             if check_font(file, font_name):
                 return file
         return None
-
-
-def linecard_to_png(text: str, font_manager: FontManager, **kwargs):
-    """
-    文字转png
-    """
-    output = BytesIO()
-    linecard(text, font_manager, **kwargs).save(output, format="png")
-    return output
 
 
 def line_wrap(line: str, width: int, font: FreeTypeFont, start: float = 0.0) -> str:
@@ -454,7 +444,7 @@ def info_splicing(
     padding: int = 20,
     spacing: int = 20,
     BG_type: str | CanvasEffectHandler = "GAUSS",
-):
+) -> IMG:
     """
     信息拼接
         info:信息图片列表
@@ -496,7 +486,7 @@ def info_splicing(
                 region = canvas.crop(box)
                 blurred_region = region.filter(ImageFilter.GaussianBlur(radius=radius))
                 canvas.paste(blurred_region, box)
-                canvas.paste(image, (20, height), mask=image)
+                canvas.paste(image, (padding, height), mask=image)
 
         else:
 
@@ -515,9 +505,7 @@ def info_splicing(
         CanvasEffect(canvas, image, padding, width, height)
         height += image.size[1] + spacing * 2
 
-    output = BytesIO()
-    canvas.convert("RGB").save(output, format="png")
-    return output
+    return canvas
 
 
 def CropResize(img: IMG, size: tuple[int, int]) -> IMG:
