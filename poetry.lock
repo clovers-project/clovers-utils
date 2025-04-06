@@ -29,7 +29,7 @@ version = "0.18"
 description = "Python parser for bash"
 optional = false
 python-versions = ">=2.7, !=3.0, !=3.1, !=3.2, !=3.3, !=3.4"
-groups = ["build"]
+groups = ["main", "build"]
 files = [
     {file = "bashlex-0.18-py2.py3-none-any.whl", hash = "sha256:91d73a23a3e51711919c1c899083890cdecffc91d8c088942725ac13e9dcfffa"},
     {file = "bashlex-0.18.tar.gz", hash = "sha256:5bb03a01c6d5676338c36fd1028009c8ad07e7d61d8a1ce3f513b7fff52796ee"},
@@ -41,7 +41,7 @@ version = "2.5.post1"
 description = "Bash style brace expander."
 optional = false
 python-versions = ">=3.8"
-groups = ["build"]
+groups = ["main", "build"]
 files = [
     {file = "bracex-2.5.post1-py3-none-any.whl", hash = "sha256:13e5732fec27828d6af308628285ad358047cec36801598368cb28bc631dbaf6"},
     {file = "bracex-2.5.post1.tar.gz", hash = "sha256:12c50952415bfa773d2d9ccb8e79651b8cdb1f31a42f6091b804f6ba2b4a66b6"},
@@ -58,7 +58,6 @@ files = [
     {file = "certifi-2025.1.31-py3-none-any.whl", hash = "sha256:ca78db4565a652026a4db2bcdf68f2fb589ea80d0be70e03929ed730746b84fe"},
     {file = "certifi-2025.1.31.tar.gz", hash = "sha256:3d5da6925056f6f18f119200434a4780a94263f10d1c21d032a6f6b2baa20651"},
 ]
-markers = {main = "extra == \"tools\" or extra == \"all\""}
 
 [[package]]
 name = "cibuildwheel"
@@ -66,7 +65,7 @@ version = "2.23.2"
 description = "Build Python wheels on CI with minimal configuration."
 optional = false
 python-versions = ">=3.8"
-groups = ["build"]
+groups = ["main", "build"]
 files = [
     {file = "cibuildwheel-2.23.2-py3-none-any.whl", hash = "sha256:aebe67a0d8463e16a4709763ee8b16a2cadc9f4fe8c040b7fedae8fdbb6443dd"},
     {file = "cibuildwheel-2.23.2.tar.gz", hash = "sha256:fba11162a4c0b3c4f0f5302661abb2dccdb26b0e9449ea0389c5ff18d4ef0c55"},
@@ -90,7 +89,7 @@ version = "1.3.0"
 description = "A tool for resolving PEP 735 Dependency Group data"
 optional = false
 python-versions = ">=3.8"
-groups = ["build"]
+groups = ["main", "build"]
 files = [
     {file = "dependency_groups-1.3.0-py3-none-any.whl", hash = "sha256:1abf34d712deda5581e80d507512664d52b35d1c2d7caf16c85e58ca508547e0"},
     {file = "dependency_groups-1.3.0.tar.gz", hash = "sha256:5b9751d5d98fbd6dfd038a560a69c8382e41afcbf7ffdbcc28a2a3f85498830f"},
@@ -108,7 +107,7 @@ version = "3.18.0"
 description = "A platform independent file lock."
 optional = false
 python-versions = ">=3.9"
-groups = ["build"]
+groups = ["main", "build"]
 files = [
     {file = "filelock-3.18.0-py3-none-any.whl", hash = "sha256:c401f4f8377c4464e6db25fff06205fd89bdd83b65eb0488ed1b160f780e21de"},
     {file = "filelock-3.18.0.tar.gz", hash = "sha256:adbc88eabb99d2fec8c9c1b229b171f18afa655400173ddc653d5d01501fb9f2"},
@@ -344,7 +343,7 @@ version = "24.2"
 description = "Core utilities for Python packages"
 optional = false
 python-versions = ">=3.8"
-groups = ["build"]
+groups = ["main", "build"]
 files = [
     {file = "packaging-24.2-py3-none-any.whl", hash = "sha256:09abb1bccd265c01f4a3aa3f7a7db064b36514d2cba19a2f694fe6150451a759"},
     {file = "packaging-24.2.tar.gz", hash = "sha256:c228a6dc5e932d346bc5739379109d49e8853dd8223571c7c5b55260edc0b97f"},
@@ -446,7 +445,7 @@ version = "4.3.7"
 description = "A small Python package for determining appropriate platform-specific dirs, e.g. a `user data dir`."
 optional = false
 python-versions = ">=3.9"
-groups = ["build"]
+groups = ["main", "build"]
 files = [
     {file = "platformdirs-4.3.7-py3-none-any.whl", hash = "sha256:a03875334331946f13c549dbd8f4bac7a13a50a895a0eb1e8c6a8ace80d40a94"},
     {file = "platformdirs-4.3.7.tar.gz", hash = "sha256:eb437d586b6a0986388f0d6f74aa0cde27b48d0e3d66843640bfb6bdcdb6e351"},
@@ -512,4 +511,4 @@ tools = ["httpx", "numpy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12"
-content-hash = "158fde334521578fc853d2fac000b3c0b63dfadcaefc52feede9ac3fd37cd27e"
+content-hash = "4ed34b9164cf9f976e0ad71f7681061bec143d067c589996bfc8702f45dbffdc"

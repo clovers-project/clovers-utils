@@ -25,8 +25,13 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [tool.poetry.group.build.dependencies]
-cibuildwheel = "^2.22.0"
 setuptools = "^75.8.0"
+cibuildwheel = "^2.22.0"
+
 
 [tool.setuptools]
 packages = ["clovers_utils", "clovers_utils.linecard"]
+
+# python setup.py build_ext --inplace
+# cibuildwheel --platform linux --output-dir ./dist
+# cibuildwheel --platform windows --output-dir ./dist
