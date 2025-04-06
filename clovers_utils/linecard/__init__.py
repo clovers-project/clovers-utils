@@ -296,6 +296,7 @@ def linecard(
                                     inner_font = ImageFont.truetype(font=fallback_font, size=inline_height, encoding="utf-8")
                                     break
                             else:
+                                inner_font = line_font
                                 char = "□"
                         temp_x = x
                         x += int(inner_font.getlength(char))
