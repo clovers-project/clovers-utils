@@ -3,25 +3,28 @@ import numpy as np
 import httpx
 
 
-async def download_url(url: str) -> bytes | None:
-    async with httpx.AsyncClient() as client:
-        for _ in range(3):
+async def download_url(url: str, client: httpx.AsyncClient | None = None, retry: int = 3):
+    async def retry_download(url: str, client: httpx.AsyncClient, retry: int):
+        for _ in range(retry):
             try:
                 resp = await client.get(url, timeout=20)
                 resp.raise_for_status()
                 return resp.content
             except httpx.HTTPStatusError:
                 await asyncio.sleep(3)
-            except:
-                return None
-    return None
+
+    if client is None:
+        async with httpx.AsyncClient() as client:
+            return await retry_download(url, client, retry)
+    else:
+        return await retry_download(url, client, retry)
 
 
 def to_int(N) -> int | None:
     try:
-        result = int(N)
+        return int(N)
     except ValueError:
-        result = {
+        return {
             "零": 0,
             "一": 1,
             "二": 2,
@@ -35,7 +38,6 @@ def to_int(N) -> int | None:
             "九": 9,
             "十": 10,
         }.get(N)
-    return result
 
 
 def format_number(num) -> str:
@@ -43,15 +45,17 @@ def format_number(num) -> str:
         return "{:,}".format(round(num, 2))
     x = str(int(num))
     if 10000 <= num < 100000000:
-        y = int(x[-4:])
-        if y:
+        if (y := int(x[-4:])) > 0:
             return f"{x[:-4]}万{y}"
         return f"{x[:-4]}万"
     if 100000000 <= num < 1000000000000:
-        y = int(x[-8:-4])
-        if y:
+        if (y := int(x[-8:-4])) > 0:
             return f"{x[:-8]}亿{y}万"
         return f"{x[:-8]}亿"
+    if 1000000000000 <= num < 1000000000000000:
+        if (y := int(x[-12:-8])) > 0:
+            return f"{x[:-12]}万亿{y}亿"
+        return f"{x[:-12]}万亿"
     return "{:.2e}".format(num)
 
 
@@ -69,8 +73,4 @@ def gini_coef(wealths: list[int]) -> float:
 
 
 def integer_log(number, base) -> int:
-    result = 0
-    while number >= base:
-        number /= base
-        result += 1
-    return result
+    return int(np.log(number) / np.log(base))
