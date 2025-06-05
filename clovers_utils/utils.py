@@ -83,3 +83,29 @@ class Library[K, V]:
         if key := self._index_key.get(index):
             return self._key_data[key]
         return self._key_data.setdefault(index, default)
+
+
+def to_int(N) -> int | None:
+    try:
+        return int(N)
+    except ValueError:
+        return {"零": 0, "一": 1, "二": 2, "两": 2, "三": 3, "四": 4, "五": 5, "六": 6, "七": 7, "八": 8, "九": 9, "十": 10}.get(N)
+
+
+def format_number(num: int | float) -> str:
+    if num < 10000:
+        return "{:,}".format(round(num, 2))
+    x = str(int(num))
+    if 10000 <= num < 100000000:
+        if (y := int(x[-4:])) > 0:
+            return f"{x[:-4]}万{y}"
+        return f"{x[:-4]}万"
+    if 100000000 <= num < 1000000000000:
+        if (y := int(x[-8:-4])) > 0:
+            return f"{x[:-8]}亿{y}万"
+        return f"{x[:-8]}亿"
+    if 1000000000000 <= num < 1000000000000000:
+        if (y := int(x[-12:-8])) > 0:
+            return f"{x[:-12]}万亿{y}亿"
+        return f"{x[:-12]}万亿"
+    return "{:.2e}".format(num)
